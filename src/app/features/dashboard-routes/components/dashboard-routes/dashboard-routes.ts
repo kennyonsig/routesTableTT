@@ -1,11 +1,8 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DashboardRoutesService } from '../../services/dashboard-routes-service';
 import { MatIconModule } from "@angular/material/icon";
 import { IRoutes } from '../../interfaces/iroutes';
-import { CdkFixedSizeVirtualScroll } from '@angular/cdk/scrolling';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
-
-
 
 @Component({
   selector: 'app-dashboard-routes',
@@ -13,44 +10,73 @@ import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
   templateUrl: './dashboard-routes.html',
   imports: [
     MatIconModule,
-    CdkFixedSizeVirtualScroll,
     InfiniteScrollDirective
   ],
   styleUrl: './dashboard-routes.scss'
 })
-export class DashboardRoutes implements OnInit {
+export class DashboardRoutes {
   routesService = inject(DashboardRoutesService);
-  routesData!: IRoutes[];
-  displayedCount = signal(17);
+  displayedCount = signal(10);
 
-  sortStates: { [key: string]: 'asc' | 'desc' | null } = {
-    address: null,
-    name: null,
-    interface: null,
-  };
+  rawRoutes = this.routesService.routesData;
 
-  ngOnInit() {
-    this.routesData = [...this.routesService.routesData()];
-  }
+  sortKey = signal<keyof IRoutes | null>(null);
+  sortDirection = signal<'asc' | 'desc' | null>(null);
+
+  sortedRoutes = computed(() => {
+    const key = this.sortKey();
+    const direction = this.sortDirection();
+    const routes = this.rawRoutes();
+
+    if (!key || !direction) return routes;
+
+    return [...routes].sort((a, b) => {
+      const valA = a[key];
+      const valB = b[key];
+
+      if (typeof valA === 'string' && typeof valB === 'string') {
+        return direction === 'asc'
+          ? valA.localeCompare(valB)
+          : valB.localeCompare(valA);
+      }
+
+      if (typeof valA === 'number' && typeof valB === 'number') {
+        return direction === 'asc' ? valA - valB : valB - valA;
+      }
+
+      return direction === 'asc'
+        ? String(valA).localeCompare(String(valB))
+        : String(valB).localeCompare(String(valA));
+    });
+  });
+
+  sortedRoutesLength = computed(() => this.sortedRoutes().length);
+
+  displayedRoutes = computed(() =>
+    this.sortedRoutes().slice(0, this.displayedCount())
+  );
 
   onScroll() {
-    if (this.displayedCount() < this.routesData.length) {
-      this.displayedCount.update(value => Math.min(value + 10, this.routesData.length));
+    if (this.displayedCount() < this.sortedRoutesLength()) {
+      this.displayedCount.update(value =>
+        Math.min(value + 10, this.sortedRoutesLength())
+      );
     }
   }
 
-  sortColumn(column: string) {
+  sortColumn(column: keyof IRoutes) {
+    if (this.sortKey() === column) {
+      this.sortDirection.update(dir =>
+        dir === 'asc' ? 'desc' :
+          dir === 'desc' ? null : 'asc'
+      );
 
-    Object.keys(this.sortStates).forEach(key => {
-      if (key !== column) {
-        this.sortStates[key] = null;
+      if (this.sortDirection() === null) {
+        this.sortKey.set(null);
       }
-    });
-
-    if (this.sortStates[column] === 'asc') {
-      this.sortStates[column] = 'desc';
     } else {
-      this.sortStates[column] = 'asc';
+      this.sortKey.set(column);
+      this.sortDirection.set('asc');
     }
   }
 }

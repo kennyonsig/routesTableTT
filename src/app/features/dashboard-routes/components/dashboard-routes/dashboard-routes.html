@@ -1,0 +1,60 @@
+<section infiniteScroll
+         [infiniteScrollDistance]="30"
+         [infiniteScrollThrottle]="500"
+         (scrolled)="onScroll()">
+  <h2>Действующие маршруты ipv4</h2>
+ <table >
+  <thead>
+  <tr>
+    <th (click)="sortColumn('address')">
+      <div class="header-filter-container">
+        <label>Адрес назначения</label>
+       @if (sortStates['address'] === "asc") {
+         <mat-icon>keyboard_arrow_down</mat-icon>
+       } @else if (sortStates['address'] === "desc"){
+         <mat-icon>keyboard_arrow_up</mat-icon>
+       }  @else if (sortStates['address'] === null) {
+         <mat-icon class="not-active"></mat-icon>
+       }
+      </div>
+    </th>
+    <th (click)="sortColumn('gateway')">
+      <div class="header-filter-container">
+        <label>Шлюз</label>
+        @if (sortStates['gateway'] === "asc") {
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        } @else if (sortStates['gateway'] === "desc"){
+          <mat-icon>keyboard_arrow_up</mat-icon>
+        } @else if (sortStates['gateway'] === null){
+          <mat-icon class="not-active"></mat-icon>
+        }
+      </div>
+    </th>
+    <th (click)="sortColumn('interface')">
+      <div class="header-filter-container">
+        <label>Интерфейс</label>
+        @if (sortStates['interface'] === "asc") {
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        } @else if (sortStates['interface'] === "desc"){
+          <mat-icon>keyboard_arrow_up</mat-icon>
+        } @else if (sortStates['interface'] === null) {
+          <mat-icon class="not-active"></mat-icon>
+        }
+      </div>
+    </th>
+  </tr>
+  </thead>
+  <tbody >
+    @for (route of routesData.slice(0, displayedCount()); track route.uuid) {
+      <tr>
+        <td>{{ route.address }}/{{ route.mask }}</td>
+        <td>{{ route.gateway }}</td>
+        <td>{{ route.interface }}</td>
+      </tr>
+    }
+  </tbody>
+ </table>
+  @if (displayedCount() < routesData.length) {
+    <div class="loading-indicator">Загрузка...</div>
+  }
+</section>

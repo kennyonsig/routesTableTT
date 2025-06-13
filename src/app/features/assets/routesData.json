@@ -1,23 +1,23 @@
 [
     {
       "uuid": "01fd074a-9b4f-4063-85d8-ac616ee28a6a",
-      "address": "121.136.50.245",
+      "address": "1.136.50.245",
       "mask": "16",
-      "gateway": "165.100.65.236",
+      "gateway": "1.136.50.245",
       "interface": "Подключение Ethernet"
     },
     {
       "uuid": "ad08028c-c25b-4ccc-aad6-4fc85cb48314",
-      "address": "33.176.116.213",
-      "mask": "6",
-      "gateway": "150.58.116.210",
+      "address": "1.136.50.245",
+      "mask": "17",
+      "gateway": "1.136.50.246",
       "interface": "Домашняя сеть"
     },
     {
       "uuid": "086a1654-7312-4520-b9d4-84428f7afa81",
-      "address": "244.240.13.52",
-      "mask": "6",
-      "gateway": "187.108.193.32",
+      "address": "121.136.50.245",
+      "mask": "18",
+      "gateway": "1.136.50.247",
       "interface": "Подключение Ethernet"
     },
     {

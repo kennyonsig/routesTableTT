@@ -1,22 +1,28 @@
+
 <section infiniteScroll
          [infiniteScrollDistance]="2"
-         [infiniteScrollThrottle]="500"
+         [infiniteScrollThrottle]="50"
          [style.height.px]="500"
          style="overflow-y: auto"
          (scrolled)="onScroll()"
          [scrollWindow]="false">
-  <h2>Действующие маршруты ipv4</h2>
- <table >
+
+  <table>
   <thead>
+  <tr class="first-tr">
+    <th class="table-title" colspan="3">
+      <h2>Действующие маршруты ipv4</h2>
+    </th>
+  </tr>
   <tr>
     <th (click)="sortColumn('address')">
       <div class="header-filter-container">
         <label>Адрес назначения</label>
-        @if (sortKey() === 'address') {
-          @if (sortDirection() === 'asc') {
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          } @else {
+        @if (routesService.sortKey() === 'address') {
+          @if (routesService.sortDirection() === 'asc') {
             <mat-icon>keyboard_arrow_up</mat-icon>
+          } @else {
+            <mat-icon>keyboard_arrow_down</mat-icon>
           }
         } @else {
           <mat-icon class="not-active">swap_vert</mat-icon>
@@ -26,35 +32,35 @@
     <th (click)="sortColumn('gateway')">
       <div class="header-filter-container">
         <label>Шлюз</label>
-        @if (sortKey() === 'gateway') {
-          @if (sortDirection() === 'asc') {
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          } @else {
+        @if (routesService.sortKey() === 'gateway') {
+          @if (routesService.sortDirection() === 'asc') {
             <mat-icon>keyboard_arrow_up</mat-icon>
+          } @else {
+            <mat-icon>keyboard_arrow_down</mat-icon>
           }
         } @else {
-          <mat-icon class="not-active"></mat-icon>
+          <mat-icon class="not-active">swap_vert</mat-icon>
         }
       </div>
     </th>
     <th (click)="sortColumn('interface')">
       <div class="header-filter-container">
         <label>Интерфейс</label>
-        @if (sortKey() === 'interface') {
-          @if (sortDirection() === 'asc') {
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          } @else {
+        @if (routesService.sortKey() === 'interface') {
+          @if (routesService.sortDirection() === 'asc') {
             <mat-icon>keyboard_arrow_up</mat-icon>
+          } @else {
+            <mat-icon>keyboard_arrow_down</mat-icon>
           }
         } @else {
-          <mat-icon class="not-active"></mat-icon>
+          <mat-icon class="not-active">swap_vert</mat-icon>
         }
       </div>
     </th>
   </tr>
   </thead>
-  <tbody >
-    @for (route of displayedRoutes(); track route.uuid) {
+  <tbody>
+    @for (route of routesService.displayedRoutes(); track route.uuid) {
       <tr>
         <td>{{ route.address }}/{{ route.mask }}</td>
         <td>{{ route.gateway }}</td>
@@ -62,8 +68,8 @@
       </tr>
     }
   </tbody>
- </table>
-  @if (displayedCount() < sortedRoutesLength()) {
+  </table>
+  @if (routesService.displayedCount() < routesService.sortedRoutesLength()) {
     <div class="loading-indicator">Загрузка...</div>
   }
 </section>

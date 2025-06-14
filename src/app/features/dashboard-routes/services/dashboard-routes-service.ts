@@ -7,96 +7,80 @@ import { IRoutes } from '../interfaces/iroutes';
   providedIn: 'root'
 })
 export class DashboardRoutesService {
-  routesData = signal(routesData);
-  sortKey = signal<keyof IRoutes | null>(null);
-  sortDirection = signal<'asc' | 'desc' | null>(null);
-  displayedCount = signal(10);
+  allRoutes = signal(routesData);
+  sortField = signal<keyof IRoutes | null>(null);
+  sortOrder = signal<'asc' | 'desc' | null>(null);
+  visibleCount = signal(10);
 
-  getIpNumber(ip: string): number {
+  ipToNumber(ip: string): number {
     const octets = ip.split('.').map(Number);
     return ((octets[0] << 24) | (octets[1] << 16) | (octets[2] << 8) | octets[3]) >>> 0;
   }
 
-  getAddressPart(route: IRoutes) {
-    const {address, mask} = route;
-    const ipNumber = this.getIpNumber(address);
-    const maskValue = Number(mask);
-
+  parseAddress(route: IRoutes) {
     return {
-      network: ipNumber,
-      mask: maskValue
+      network: this.ipToNumber(route.address),
+      mask: Number(route.mask)
     };
   }
 
   sortedRoutes = computed(() => {
-    const key = this.sortKey();
-    const direction = this.sortDirection();
-    const routes = this.routesData();
+    const field = this.sortField();
+    const order = this.sortOrder();
+    const routes: IRoutes[] = this.allRoutes();
+    const sortDirection = order === 'asc' ? 1 : -1;
 
-    if (!key || !direction) return routes;
+    if (!field || !order) return routes;
 
-    return [...routes].sort((a, b) => {
-      if (key === 'address') {
-        const addressA = this.getAddressPart(a);
-        const addressB = this.getAddressPart(b);
+    return [...routes].sort((a: IRoutes, b: IRoutes) => {
+
+      if (field  === 'address') {
+        const addressA = this.parseAddress(a);
+        const addressB = this.parseAddress(b);
 
         if (addressA.network !== addressB.network) {
-          return direction === 'asc'
-            ? addressA.network - addressB.network
-            : addressB.network - addressA.network;
+          return (addressA.network - addressB.network) * sortDirection;
         }
 
         if (addressA.mask !== addressB.mask) {
-          return direction === 'asc'
-            ? addressA.mask - addressB.mask
-            : addressB.mask - addressA.mask;
+          return (addressA.mask - addressB.mask) * sortDirection;
         }
 
-      } else if (key === 'gateway') {
-        const gatewayA = this.getIpNumber(a.gateway);
-        const gatewayB = this.getIpNumber(b.gateway);
-        return direction === 'asc'
-          ? gatewayA - gatewayB
-          : gatewayB - gatewayA;
+        return (this.ipToNumber(a.gateway) - this.ipToNumber(b.gateway)) * sortDirection;
+
+      } else if (field  === 'gateway') {
+        return (this.ipToNumber(a.gateway) - this.ipToNumber(b.gateway)) * sortDirection;
       }
 
-      return direction === 'asc'
-        ? a[key].localeCompare(b[key])
-        : b[key].localeCompare(a[key]);
+      return a[field].localeCompare(b[field]) * sortDirection;
     });
   });
 
-  sortedRoutesLength = computed(() => this.sortedRoutes().length);
+  visibleRoutes = computed(() => this.sortedRoutes().length);
 
   displayedRoutes = computed(() =>
-    this.sortedRoutes().slice(0, this.displayedCount())
+    this.sortedRoutes().slice(0, this.visibleCount())
   );
 
-
-  sortColumn(column: keyof IRoutes) {
-    const isCurrentColumn = this.sortKey() === column;
-
-    if (isCurrentColumn) {
-      this.sortDirection.update(dir => {
-        if (dir === 'asc') return 'desc';
-        if (dir === 'desc') return null;
-        return 'asc';
-      });
-
-      if (this.sortDirection() === null) {
-        this.sortKey.set(null);
+  toggleSort(column: keyof IRoutes) {
+    if (this.sortField() === column) {
+      if (this.sortOrder() === 'asc') {
+        this.sortOrder.set('desc');
+      } else if (this.sortOrder() === 'desc') {
+        this.sortOrder.set(null);
+        this.sortField.set(null);
+      } else {
+        this.sortOrder.set('asc');
       }
     } else {
-      this.sortKey.set(column);
-      this.sortDirection.set('asc');
+      this.sortField.set(column);
+      this.sortOrder.set('asc');
     }
   }
 
-  onScroll() {
-    if (this.displayedCount() < this.sortedRoutesLength()) {
-      this.displayedCount.update(value =>
-        Math.min(value + 10, this.sortedRoutesLength())
-      );
+  loadMore() {
+    if (this.visibleCount() < this.sortedRoutes().length) {
+      this.visibleCount.set(this.visibleCount() + 10);
     }
   }
 }

@@ -17,10 +17,6 @@ export class DashboardRoutes {
   routesService = inject(DashboardRoutesService);
 
   sortColumn(column: keyof IRoutes) {
-    this.routesService.sortColumn(column);
-  }
-
-  onScroll() {
-    this.routesService.onScroll();
+    this.routesService.toggleSort(column);
   }
 }

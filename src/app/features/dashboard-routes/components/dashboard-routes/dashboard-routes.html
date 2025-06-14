@@ -4,7 +4,7 @@
          [infiniteScrollThrottle]="50"
          [style.height.px]="500"
          style="overflow-y: auto"
-         (scrolled)="onScroll()"
+         (scrolled)="routesService.loadMore()"
          [scrollWindow]="false">
 
   <table>
@@ -18,8 +18,8 @@
     <th (click)="sortColumn('address')">
       <div class="header-filter-container">
         <label>Адрес назначения</label>
-        @if (routesService.sortKey() === 'address') {
-          @if (routesService.sortDirection() === 'asc') {
+        @if (routesService.sortField() === 'address') {
+          @if (routesService.sortOrder() === 'asc') {
             <mat-icon>keyboard_arrow_up</mat-icon>
           } @else {
             <mat-icon>keyboard_arrow_down</mat-icon>
@@ -32,8 +32,8 @@
     <th (click)="sortColumn('gateway')">
       <div class="header-filter-container">
         <label>Шлюз</label>
-        @if (routesService.sortKey() === 'gateway') {
-          @if (routesService.sortDirection() === 'asc') {
+        @if (routesService.sortField() === 'gateway') {
+          @if (routesService.sortOrder() === 'asc') {
             <mat-icon>keyboard_arrow_up</mat-icon>
           } @else {
             <mat-icon>keyboard_arrow_down</mat-icon>
@@ -46,8 +46,8 @@
     <th (click)="sortColumn('interface')">
       <div class="header-filter-container">
         <label>Интерфейс</label>
-        @if (routesService.sortKey() === 'interface') {
-          @if (routesService.sortDirection() === 'asc') {
+        @if (routesService.sortField() === 'interface') {
+          @if (routesService.sortOrder() === 'asc') {
             <mat-icon>keyboard_arrow_up</mat-icon>
           } @else {
             <mat-icon>keyboard_arrow_down</mat-icon>
@@ -69,7 +69,7 @@
     }
   </tbody>
   </table>
-  @if (routesService.displayedCount() < routesService.sortedRoutesLength()) {
+  @if (routesService.visibleCount() < routesService.visibleRoutes()) {
     <div class="loading-indicator">Загрузка...</div>
   }
 </section>

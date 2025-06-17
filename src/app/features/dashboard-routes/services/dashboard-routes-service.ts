@@ -1,13 +1,14 @@
-import { computed, Injectable, signal } from '@angular/core';
-import routesData from '../../assets/routesData.json'
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { IRoutes } from '../interfaces/iroutes';
+import { HttpClient } from '@angular/common/http';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardRoutesService {
-  allRoutes = signal(routesData);
+  allRoutes = signal<IRoutes[]>([]);
   sortField = signal<keyof IRoutes | null>(null);
   sortOrder = signal<'asc' | 'desc' | null>(null);
   visibleCount = signal(10);

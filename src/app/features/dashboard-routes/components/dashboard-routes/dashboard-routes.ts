@@ -1,15 +1,17 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DashboardRoutesService } from '../../services/dashboard-routes-service';
 import { MatIconModule } from "@angular/material/icon";
 import { IRoutes } from '../../interfaces/iroutes';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard-routes',
   templateUrl: './dashboard-routes.html',
   imports: [
     MatIconModule,
-    InfiniteScrollDirective
+    InfiniteScrollDirective,
+    NgTemplateOutlet
   ],
   styleUrl: './dashboard-routes.scss'
 })

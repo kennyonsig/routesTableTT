@@ -5,7 +5,6 @@
          style="overflow-y: auto"
          (scrolled)="routesService.loadMore()"
          [scrollWindow]="false">
-
   <table>
   <thead>
   <tr class="first-tr">
@@ -14,48 +13,21 @@
     </th>
   </tr>
   <tr>
-    <th (click)="sortColumn('address')">
-      <div class="header-filter-container">
-        <label>Адрес назначения</label>
-        @if (routesService.sortField() === 'address') {
-          @if (routesService.sortOrder() === 'asc') {
-            <mat-icon>keyboard_arrow_up</mat-icon>
-          } @else {
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          }
-        } @else {
-          <mat-icon>swap_vert</mat-icon>
-        }
-      </div>
-    </th>
-    <th (click)="sortColumn('gateway')">
-      <div class="header-filter-container">
-        <label>Шлюз</label>
-        @if (routesService.sortField() === 'gateway') {
-          @if (routesService.sortOrder() === 'asc') {
-            <mat-icon>keyboard_arrow_up</mat-icon>
-          } @else {
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          }
-        } @else {
-          <mat-icon>swap_vert</mat-icon>
-        }
-      </div>
-    </th>
-    <th (click)="sortColumn('interface')">
-      <div class="header-filter-container">
-        <label>Интерфейс</label>
-        @if (routesService.sortField() === 'interface') {
-          @if (routesService.sortOrder() === 'asc') {
-            <mat-icon>keyboard_arrow_up</mat-icon>
-          } @else {
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          }
-        } @else {
-          <mat-icon>swap_vert</mat-icon>
-        }
-      </div>
-    </th>
+    <ng-template #fieldTable let-column="column" let-label="label">
+      <th (click)="sortColumn(column)">
+        <div class="header-filter-container">
+          <label>{{label}}</label>
+          <mat-icon>
+            {{ routesService.sortField() === column
+            ? (routesService.sortOrder() === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down')
+            : 'swap_vert' }}
+          </mat-icon>
+        </div>
+      </th>
+    </ng-template>
+    <ng-container *ngTemplateOutlet="fieldTable; context: {column: 'address', label: 'Адрес назначения'}"></ng-container>
+    <ng-container *ngTemplateOutlet="fieldTable; context: {column: 'gateway', label: 'Шлюз'}"></ng-container>
+    <ng-container *ngTemplateOutlet="fieldTable; context: {column: 'interface', label: 'Интерфейс'}"></ng-container>
   </tr>
   </thead>
   <tbody>
@@ -68,7 +40,4 @@
     }
   </tbody>
   </table>
-  @if (routesService.visibleCount() < routesService.visibleRoutes()) {
-    <div class="loading-indicator">Загрузка...</div>
-  }
 </section>

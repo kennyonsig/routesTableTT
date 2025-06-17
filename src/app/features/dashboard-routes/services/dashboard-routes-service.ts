@@ -56,26 +56,31 @@ export class DashboardRoutesService {
     });
   });
 
-  visibleRoutes = computed(() => this.sortedRoutes().length);
-
   displayedRoutes = computed(() =>
     this.sortedRoutes().slice(0, this.visibleCount())
   );
 
   toggleSort(column: keyof IRoutes) {
     if (this.sortField() === column) {
-      if (this.sortOrder() === 'asc') {
-        this.sortOrder.set('desc');
-      } else if (this.sortOrder() === 'desc') {
-        this.sortOrder.set(null);
-        this.sortField.set(null);
-      } else {
-        this.sortOrder.set('asc');
+      let currentOrder = this.sortOrder();
+
+      switch (currentOrder) {
+        case 'asc':
+          currentOrder = 'desc'
+          break;
+        case 'desc':
+          currentOrder = null
+          this.sortField.set(null)
+          break;
+        case null:
+          currentOrder = 'asc'
+          break;
       }
-    } else {
-      this.sortField.set(column);
-      this.sortOrder.set('asc');
+      return this.sortOrder.set(currentOrder);
     }
+
+    this.sortField.set(column);
+    this.sortOrder.set('asc');
   }
 
   loadMore() {

@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { IRoutes } from '../interfaces/iroutes';
 
 @Injectable({
@@ -22,7 +22,7 @@ export class DashboardRoutesService {
     };
   }
 
-  sortedRoutes = computed(() => {
+  sortedRoutes = computed((): IRoutes[] => {
     const field = this.sortField();
     const order = this.sortOrder();
     const routes: IRoutes[] = this.allRoutes();
@@ -54,7 +54,7 @@ export class DashboardRoutesService {
     });
   });
 
-  displayedRoutes = computed(() =>
+  displayedRoutes = computed((): IRoutes[] =>
     this.sortedRoutes().slice(0, this.visibleCount())
   );
 

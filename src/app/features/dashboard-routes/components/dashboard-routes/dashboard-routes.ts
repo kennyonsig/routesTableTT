@@ -24,7 +24,7 @@ export class DashboardRoutes implements OnInit {
   ngOnInit() {
     this.http.get<IRoutes[]>('assets/routesData.json').subscribe({
      next: (data: IRoutes[]) => {
-       this. routesService.allRoutes.set(data);
+       this.routesService.allRoutes.set(data);
        this.isLoading = false;
      }
    });
